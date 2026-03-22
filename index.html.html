@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Исчезающие виды животных</title>
+  <style>
+    :root {
+      --bg: #fff7d6;
+      --panel: #ffffff;
+      --accent-1: #ffcc70;
+      --accent-2: #70d6ff;
+      --accent-3: #caffbf;
+      --text: #264653;
+      --title: #7a3e00;
+      --shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #fff7d6 0%, #ffe8b6 100%);
+      color: var(--text);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .screen {
+      width: min(1100px, 100%);
+      background: rgba(255, 255, 255, 0.45);
+      border-radius: 28px;
+      padding: 24px;
+    }
+
+    .header {
+      background: var(--accent-1);
+      color: var(--title);
+      border-radius: 24px;
+      padding: 18px 24px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      font-weight: 700;
+      font-size: clamp(28px, 4vw, 40px);
+    }
+
+    .hero-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin: 26px 0 18px;
+    }
+
+    .hero-animal {
+      font-size: 46px;
+      background: white;
+      border-radius: 20px;
+      width: 92px;
+      height: 92px;
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow);
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+      color: #6a4c93;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .rules {
+      max-width: 720px;
+      margin: 0 auto 24px;
+      font-size: 22px;
+      line-height: 1.5;
+    }
+
+    .center { text-align: center; }
+
+    .btn {
+      border: none;
+      border-radius: 18px;
+      padding: 16px 24px;
+      font-size: 24px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+    .btn:disabled { cursor: default; opacity: 0.75; transform: none; }
+
+    .btn-primary { background: #ff6b6b; color: white; }
+    .btn-green { background: #06d6a0; color: white; }
+    .btn-gray { background: #adb5bd; color: white; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: var(--accent-2);
+      border-radius: 20px;
+      padding: 16px 20px;
+      box-shadow: var(--shadow);
+      font-size: 24px;
+      font-weight: 700;
+      color: #073b4c;
+      margin-bottom: 18px;
+    }
+
+    .game-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .animal-card {
+      background: var(--panel);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+      text-align: center;
+    }
+
+    .animal-image,
+    .animal-placeholder {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 18px;
+      margin-bottom: 12px;
+    }
+
+    .animal-image {
+      object-fit: cover;
+      background: #ffeaa7;
+      display: block;
+    }
+
+    .animal-placeholder {
+      display: grid;
+      place-items: center;
+      font-size: 86px;
+      background: #ffeaa7;
+    }
+
+    .animal-name {
+      font-size: 28px;
+      font-weight: 700;
+      color: #6d597a;
+      min-height: 40px;
+    }
+
+    .question-block {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .question {
+      text-align: center;
+      font-size: 34px;
+      font-weight: 700;
+      color: #3a0ca3;
+      line-height: 1.25;
+      min-height: 96px;
+    }
+
+    .options {
+      display: grid;
+      gap: 14px;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: center;
+      font-size: 24px;
+      padding: 18px 16px;
+      border-radius: 18px;
+      border: none;
+      background: white;
+      color: #1f2937;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 0.12s ease;
+    }
+
+    .option-btn:hover { transform: translateY(-1px); }
+    .option-btn.correct { background: #b7efc5; }
+    .option-btn.wrong { background: #ffadad; }
+
+    .fact {
+      min-height: 110px;
+      background: var(--accent-3);
+      border-radius: 18px;
+      padding: 18px;
+      font-size: 22px;
+      line-height: 1.4;
+      font-weight: 700;
+      color: #1b4332;
+    }
+
+    .hidden { display: none !important; }
+
+    .result-score {
+      text-align: center;
+      font-size: 40px;
+      font-weight: 700;
+      color: #3a0ca3;
+      margin: 28px 0 16px;
+    }
+
+    .result-animals {
+      text-align: center;
+      font-size: 42px;
+      margin-bottom: 14px;
+    }
+
+    .result-message {
+      max-width: 760px;
+      margin: 0 auto 24px;
+      font-size: 26px;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 860px) {
+      .game-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .question { font-size: 28px; min-height: auto; }
+      .option-btn, .btn, .topbar, .rules, .fact { font-size: 20px; }
+      .animal-name { font-size: 24px; }
+      .result-score { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="screen">
+      <section id="start-screen">
+        <div class="header">🐾 Спасём редких животных! 🐾</div>
+        <div class="hero-row">
+          <div class="hero-animal">🐯</div>
+          <div class="hero-animal">🐆</div>
+          <div class="hero-animal">🐋</div>
+          <div class="hero-animal">🐻‍❄️</div>
+          <div class="hero-animal">🦬</div>
+        </div>
+        <div class="subtitle">Яркая игра-викторина об исчезающих видах животных</div>
+        <div class="card rules">
+          Правила игры:<br>
+          • выберите правильный ответ;<br>
+          • за каждый верный ответ вы получаете 1 балл;<br>
+          • картинка животного появляется после правильного ответа;<br>
+          • в конце вы увидите свой результат.
+        </div>
+        <div class="center">
+          <button class="btn btn-primary" id="start-btn">▶ Начать игру</button>
+        </div>
+      </section>
+
+      <section id="game-screen" class="hidden">
+        <div class="topbar">
+          <div id="progress">Вопрос 1 из 1</div>
+          <div id="score">⭐ Очки: 0</div>
+        </div>
+
+        <div class="game-layout">
+          <div class="animal-card">
+            <img id="animal-image" class="animal-image hidden" alt="Животное" />
+            <div id="animal-placeholder" class="animal-placeholder">❓</div>
+            <div id="animal-name" class="animal-name"></div>
+          </div>
+
+          <div class="question-block">
+            <div id="question" class="question"></div>
+            <div id="options" class="options"></div>
+            <div id="fact" class="fact">Выберите ответ, чтобы увидеть результат.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="result-screen" class="hidden">
+        <div class="header">🏆 Игра окончена! 🏆</div>
+        <div id="result-score" class="result-score"></div>
+        <div id="result-animals" class="result-animals"></div>
+        <div id="result-message" class="card result-message"></div>
+        <div class="actions">
+          <button class="btn btn-green" id="restart-btn">🔄 Играть снова</button>
+          <button class="btn btn-gray" id="home-btn">🏠 На главную</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const QUESTIONS = [
+      {
+        question: 'Почему амурского тигра нужно особенно охранять?',
+        options: [
+          'Потому что он любит жить рядом с городом',
+          'Потому что это редкое животное и ему нужен безопасный лес',
+          'Потому что он питается только фруктами'
+        ],
+        answer: 'Потому что это редкое животное и ему нужен безопасный лес',
+        fact: 'Амурский тигр живёт на Дальнем Востоке России. Ему нужны большие лесные территории и защита от браконьеров.',
+        emoji: '🐯',
+        animalName: 'Амурский тигр',
+        image: 'tiger.jpg.jpg'
+      },
+      {
+        question: 'Почему исчезающим животным становится трудно жить рядом с людьми?',
+        options: [
+          'Потому что животные не любят солнечный свет',
+          'Потому что всем животным обязательно нужен снег',
+          'Люди вырубают леса, строят дороги и загрязняют природу'
+        ],
+        answer: 'Люди вырубают леса, строят дороги и загрязняют природу',
+        fact: 'Когда исчезают леса, реки и чистые места, животным становится негде жить и искать пищу.',
+        emoji: '🌿',
+        animalName: 'Дом природы',
+        image: null
+      },
+      {
+        question: 'Чем дальневосточный леопард отличается от многих других крупных кошек?',
+        options: [
+          'Он встречается очень редко и умеет жить в холодном климате',
+          'Он живёт только в пустыне и не любит деревья',
+          'Он никогда не охотится и ест только траву'
+        ],
+        answer: 'Он встречается очень редко и умеет жить в холодном климате',
+        fact: 'Дальневосточный леопард — один из самых редких хищников мира. Он приспособлен к жизни в холодных лесах.',
+        emoji: '🐆',
+        animalName: 'Дальневосточный леопард',
+        image: 'leopard.jpg.jpg'
+      },
+      {
+        question: 'Зачем люди создают заповедники и национальные парки?',
+        options: [
+          'Чтобы в лесу было больше шумных дорог',
+          'Чтобы животные и растения жили в безопасности',
+          'Чтобы там можно было ловить всех редких зверей'
+        ],
+        answer: 'Чтобы животные и растения жили в безопасности',
+        fact: 'В заповедниках природу охраняют. Там животные могут жить спокойнее, а люди учатся беречь окружающий мир.',
+        emoji: '🏞️',
+        animalName: 'Заповедная природа',
+        image: null
+      },
+      {
+        question: 'Почему большим морским животным, например китам, опасен мусор в океане?',
+        options: [
+          'Потому что мусор делает воду сладкой',
+          'Потому что киты боятся волн',
+          'Они могут запутаться в нём или проглотить его'
+        ],
+        answer: 'Они могут запутаться в нём или проглотить его',
+        fact: 'Пластик и сети в океане очень опасны для морских животных. Из-за них киты, черепахи и рыбы могут погибнуть.',
+        emoji: '🐋',
+        animalName: 'Кит',
+        image: 'whale.jpg.jpg'
+      },
+      {
+        question: 'Какой поступок школьника действительно помогает природе?',
+        options: [
+          'Шуметь в лесу и пугать птиц',
+          'Не бросать мусор, беречь воду и не ломать ветки',
+          'Рвать редкие цветы для букета'
+        ],
+        answer: 'Не бросать мусор, беречь воду и не ломать ветки',
+        fact: 'Даже маленькие добрые поступки помогают сохранять дома животных и делать природу чище.',
+        emoji: '🌍',
+        animalName: 'Планета Земля',
+        image: null
+      },
+      {
+        question: 'Почему белому медведю трудно жить, если в Арктике становится меньше льда?',
+        options: [
+          'Потому что он может жить только на деревьях',
+          'Потому что лёд нужен ему только для игр',
+          'Ему сложнее передвигаться и искать пищу'
+        ],
+        answer: 'Ему сложнее передвигаться и искать пищу',
+        fact: 'Белый медведь охотится и путешествует по льду. Когда льда становится меньше, ему труднее выживать.',
+        emoji: '🐻‍❄️',
+        animalName: 'Белый медведь',
+        image: 'polar_bear.jpg.jpg'
+      },
+      {
+        question: 'Почему нельзя покупать вещи, сделанные из редких животных?',
+        options: [
+          'Потому что такие вещи всегда очень тяжёлые',
+          'Это может поддерживать браконьеров и вредить животным',
+          'Потому что они быстро меняют цвет'
+        ],
+        answer: 'Это может поддерживать браконьеров и вредить животным',
+        fact: 'Когда люди покупают такие вещи, кто-то продолжает незаконно охотиться на редких животных.',
+        emoji: '🦌',
+        animalName: 'Сайгак и другие редкие животные',
+        image: 'saiga.jpg.jpg'
+      },
+      {
+        question: 'Почему историю зубра часто приводят как хороший пример помощи животным?',
+        options: [
+          'Потому что зубр стал домашним животным',
+          'Потому что зубры научились жить в городе',
+          'Люди сумели защитить его и увеличить численность'
+        ],
+        answer: 'Люди сумели защитить его и увеличить численность',
+        fact: 'Когда-то зубров осталось очень мало, но благодаря охране и специальным программам их стало больше.',
+        emoji: '🦬',
+        animalName: 'Зубр',
+        image: 'bison.jpg'
+      }
+    ];
+
+    const startScreen = document.getElementById('start-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const progressEl = document.getElementById('progress');
+    const scoreEl = document.getElementById('score');
+    const animalImageEl = document.getElementById('animal-image');
+    const animalPlaceholderEl = document.getElementById('animal-placeholder');
+    const animalNameEl = document.getElementById('animal-name');
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const factEl = document.getElementById('fact');
+    const resultScoreEl = document.getElementById('result-score');
+    const resultAnimalsEl = document.getElementById('result-animals');
+    const resultMessageEl = document.getElementById('result-message');
+    const startBtn = document.getElementById('start-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const homeBtn = document.getElementById('home-btn');
+
+    let questions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let waitingNext = false;
+
+    function shuffleArray(items) {
+      const copy = items.map(item => ({ ...item }));
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = copy[i];
+        copy[i] = copy[j];
+        copy[j] = temp;
+      }
+      return copy;
+    }
+
+    function showScreen(screen) {
+      startScreen.classList.add('hidden');
+      gameScreen.classList.add('hidden');
+      resultScreen.classList.add('hidden');
+      screen.classList.remove('hidden');
+    }
+
+    function resetAnimalCard() {
+      animalImageEl.classList.add('hidden');
+      animalImageEl.removeAttribute('src');
+      animalPlaceholderEl.classList.remove('hidden');
+      animalPlaceholderEl.textContent = '❓';
+      animalNameEl.textContent = '';
+    }
+
+    function revealAnimalCard(question) {
+      animalNameEl.textContent = question.animalName;
+
+      if (question.image) {
+        animalImageEl.onload = function () {
+          animalImageEl.classList.remove('hidden');
+          animalPlaceholderEl.classList.add('hidden');
+        };
+
+        animalImageEl.onerror = function () {
+          animalImageEl.classList.add('hidden');
+          animalPlaceholderEl.classList.remove('hidden');
+          animalPlaceholderEl.textContent = question.emoji;
+        };
+
+        animalImageEl.src = question.image;
+      } else {
+        animalImageEl.classList.add('hidden');
+        animalPlaceholderEl.classList.remove('hidden');
+        animalPlaceholderEl.textContent = question.emoji;
+      }
+    }
+
+    function startGame() {
+      questions = shuffleArray(QUESTIONS);
+      currentIndex = 0;
+      score = 0;
+      waitingNext = false;
+      showScreen(gameScreen);
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const question = questions[currentIndex];
+      progressEl.textContent = 'Вопрос ' + (currentIndex + 1) + ' из ' + questions.length;
+      scoreEl.textContent = '⭐ Очки: ' + score;
+      questionEl.textContent = question.question;
+      factEl.textContent = 'Выберите ответ, чтобы увидеть результат.';
+      optionsEl.innerHTML = '';
+      waitingNext = false;
+      resetAnimalCard();
+
+      question.options.forEach(function (option, index) {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.type = 'button';
+        btn.textContent = option;
+        btn.addEventListener('click', function () {
+          handleAnswer(index);
+        });
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(selectedIndex) {
+      if (waitingNext) {
+        return;
+      }
+
+      waitingNext = true;
+      const question = questions[currentIndex];
+      const buttons = Array.from(optionsEl.querySelectorAll('.option-btn'));
+      const selected = question.options[selectedIndex];
+      const isCorrect = selected === question.answer;
+
+      buttons.forEach(function (button) {
+        button.disabled = true;
+      });
+
+      if (isCorrect) {
+        score += 1;
+        buttons[selectedIndex].classList.add('correct');
+        revealAnimalCard(question);
+        factEl.textContent = '✅ Верно! ' + question.fact;
+      } else {
+        buttons[selectedIndex].classList.add('wrong');
+        const correctIndex = question.options.indexOf(question.answer);
+        if (correctIndex >= 0) {
+          buttons[correctIndex].classList.add('correct');
+        }
+        resetAnimalCard();
+        factEl.textContent = '❌ Неверно. Правильный ответ: ' + question.answer + '. ' + question.fact;
+      }
+
+      scoreEl.textContent = '⭐ Очки: ' + score;
+
+      window.setTimeout(function () {
+        currentIndex += 1;
+        if (currentIndex < questions.length) {
+          renderQuestion();
+        } else {
+          showResult();
+        }
+      }, 2200);
+    }
+
+    function showResult() {
+      resultScoreEl.textContent = 'Ваш результат: ' + score + ' из ' + questions.length;
+
+      if (score === questions.length) {
+        resultAnimalsEl.textContent = '🐯 🐋 🐆 🐻‍❄️ 🦬';
+        resultMessageEl.textContent = 'Вы настоящий защитник природы! Все ответы верные!';
+      } else if (score >= Math.floor(questions.length / 2)) {
+        resultAnimalsEl.textContent = '🐼 🌿 🦉 🌍';
+        resultMessageEl.textContent = 'Очень хороший результат! Вы многое знаете о редких животных.';
+      } else {
+        resultAnimalsEl.textContent = '🐾 🌱 💚';
+        resultMessageEl.textContent = 'Начало отличное! Попробуйте ещё раз и узнайте больше о животных Красной книги.';
+      }
+
+      showScreen(resultScreen);
+    }
+
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', startGame);
+    homeBtn.addEventListener('click', function () {
+      showScreen(startScreen);
+    });
+
+    showScreen(startScreen);
+  </script>
+</body>
+</html>
